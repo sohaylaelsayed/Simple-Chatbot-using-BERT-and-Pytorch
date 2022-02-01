@@ -4,10 +4,10 @@ import torch
 import numpy as np 
 from Train import Train
 import random
-from sklearn import preprocessing
 import os 
-import pickle
-le = preprocessing.LabelEncoder()
+from sklearn.preprocessing import LabelEncoder
+
+
 
 def check_trained_model(model_name):
     if(model_name=="bert"):
@@ -19,6 +19,7 @@ def check_trained_model(model_name):
     return(model_trained)
 
 def get_prediction(str,tokenizer,model_name):
+    le_encode = torch.load("encoding/le")
     device = torch.device("cuda")
     max_seq_len=8
     str = re.sub(r"[^a-zA-Z ]+", "", str)
@@ -38,15 +39,15 @@ def get_prediction(str,tokenizer,model_name):
         preds = train_model(test_seq.to(device), test_mask.to(device))
     preds = preds.detach().cpu().numpy()
     preds = np.argmax(preds, axis = 1)
-    print("Intent Identified: ", le.inverse_transform(preds)[0])
-    return le.inverse_transform(preds)[0]
+    print("Intent Identified: ", le_encode.inverse_transform(preds)[0])
+    return le_encode.inverse_transform(preds)[0]
+
 
 def get_response(message,tokenizer,intents,model_name): 
     intent = get_prediction(message,tokenizer,model_name)
-    data = json.load(intents)
+    data = json.load(open (intents))
     for i in data['intents']: 
         if i["tag"] == intent:
             result = random.choice(i["responses"])
-        break
     print(f"Response : {result}")
     return "Intent: "+ intent + '\n' + "Response: " + result

@@ -11,12 +11,15 @@ def data_load(dataset):
         df = pd.read_csv(csv_file)
         df.head()
         df["label"].value_counts()
-        print(df)
+        #print(df['label'])
         # Converting the labels into encodings
         df['label'] = le.fit_transform(df['label'])
+        torch.save(le, "encoding/le")
         # check class distribution
         df['label'].value_counts(normalize = True)
-        print(df)
+        #print(df['label'])
+        
+
     return df
 
 
@@ -41,7 +44,9 @@ def data_process(model,dataset):
         bert_model = DistilBertModel.from_pretrained("distilbert-base-uncased")
 
     # In this example we have used all the utterances for training purpose
-    train_text, train_labels = df["Text"], df["label"]
+    train_text = df["Text"]
+    train_labels =  df["label"]
+    # print(train_labels.tolist())
 
     # Based on the histogram we are selecting the max len as 8
     max_seq_len = 8
