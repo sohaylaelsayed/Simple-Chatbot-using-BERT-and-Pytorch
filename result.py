@@ -15,13 +15,13 @@ args = vars(ap.parse_args())
 
 def result():
     # call dta process with model type ,load some variable for train
-    bert_model,train_labels,train_dataloader,tokenizer=data_process("bert", "chitchat.csv")
+    bert_model,train_labels,train_dataloader,tokenizer=data_process("roberta", "chitchat.csv")
     # call activate train function and fine_tune the model
-    # trained_model=Train.tune_train(bert_model,train_labels,train_dataloader)
+    trained_model=Train.tune_train(bert_model,train_labels,train_dataloader)
     # save the train model
-    # Train.save_trained("bert",trained_model)
+    Train.save_trained("roberta",trained_model)
     message = "why dont you introduce yourself"
-    get_response(message,tokenizer,"data.json","bert")
+    get_response(message,tokenizer,"data.json","roberta")
 
 
 result()

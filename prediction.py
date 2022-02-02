@@ -6,16 +6,22 @@ from Train import Train
 import random
 import os 
 from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import classification_report
+import time
+import sys
 
 
 
 def check_trained_model(model_name):
     if(model_name=="bert"):
         model_trained = torch.load("model/bert")
+        print(sys.getsizeof(model_trained))
     elif(model_name=="roberta"):
         model_trained=torch.load("model/roberta")
+        print(sys.getsizeof(model_trained))
     elif(model_name=="distilbert"):
-       model_trained=torch.load("model/distilbert")
+        model_trained=torch.load("model/distilbert")
+        print(sys.getsizeof(model_trained))
     return(model_trained)
 
 def get_prediction(str,tokenizer,model_name):
@@ -34,11 +40,14 @@ def get_prediction(str,tokenizer,model_name):
     test_seq = torch.tensor(tokens_test_data["input_ids"])
     test_mask = torch.tensor(tokens_test_data["attention_mask"])
     preds = None
+    start = time.time()
     with torch.no_grad():
         train_model = check_trained_model(model_name)
         preds = train_model(test_seq.to(device), test_mask.to(device))
     preds = preds.detach().cpu().numpy()
     preds = np.argmax(preds, axis = 1)
+    stop = time.time()
+    print(f"Prediction time: {stop - start}s")
     print("Intent Identified: ", le_encode.inverse_transform(preds)[0])
     return le_encode.inverse_transform(preds)[0]
 

@@ -1,12 +1,11 @@
 import torch.nn as nn
+import time
 from BertArch import BertArch
 import torch
 import numpy as np 
 from transformers import AdamW
 from sklearn.utils.class_weight import compute_class_weight
 from torch.optim.lr_scheduler import StepLR
-import pickle
-from sklearn.metrics import accuracy_score
 from torchinfo import summary
 
 class Train():
@@ -86,6 +85,7 @@ class Train():
         total_preds  = np.concatenate(total_preds, axis=0)
         #returns the loss and predictions
         # empty lists to store training and validation loss of each epoch
+        start = time.time()
         train_losses=[]
         # number of training epochs
         epochs = 200
@@ -101,8 +101,9 @@ class Train():
             # it can make your experiment reproducible, similar to set  random seed to all options where there needs a random seed.
             torch.backends.cudnn.deterministic = True
             torch.backends.cudnn.benchmark = False
-
+        stop = time.time()
         print(f'\nTraining Loss: {train_loss:.3f}')
+        print(f"Training time: {stop - start}s")
         return(selected_model)
 
     def save_trained(model_name:str,model_trained):
